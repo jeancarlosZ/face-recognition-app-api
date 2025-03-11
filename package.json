@@ -1,0 +1,26 @@
+{
+  "name": "face-recognition-app-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeancarlosZ/face-recognition-app-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeancarlosZ/face-recognition-app-api/issues"
+  },
+  "homepage": "https://github.com/jeancarlosZ/face-recognition-app-api#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
