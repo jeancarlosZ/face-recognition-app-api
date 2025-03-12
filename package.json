@@ -19,6 +19,8 @@
   "homepage": "https://github.com/jeancarlosZ/face-recognition-app-api#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "clarifai-nodejs-grpc": "^11.2.0",
+    "cors": "^2.8.5",
     "express": "^4.21.2"
   },
   "devDependencies": {

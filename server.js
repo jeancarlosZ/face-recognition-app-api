@@ -1,19 +1,24 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
+
+const image = require("./controllers/image");
 
 const app = express();
 const saltRounds = 10;
 
 app.use(express.json());
+app.use(cors());
 
 let idCount = 1;
 const mockDatabase = {
   users: []
 }
 
-app.get("/", (req, res) => {
-  res.send(mockDatabase.users);
-})
+// Test only - when you have a database variable you want to use
+// app.get("/", (req, res) => {
+//   res.send(mockDatabase.users);
+// })
 
 app.post("/signin", async (req, res) => {
   const { email, password } = req.body;
@@ -22,17 +27,17 @@ app.post("/signin", async (req, res) => {
     if (email === user.email) {
       const match = await bcrypt.compare(password, user.password);
       if (match) {
-        return res.json("Success");
+        return res.json(user);
       };
     };
   };
-  res.status(400).json("error loggin in");
+  res.status(400).json("wrong credentials");
 })
 
 app.post("/register", (req, res) => {
   const { name, email, password } = req.body;
   mockDatabase.users.push({
-    id: idCount++,
+    id: String(idCount++),
     name: name,
     email: email,
     password: password,
@@ -55,7 +60,7 @@ app.get("/profile/:id", (req, res) => {
   const { id } = req.params;
   let found = false;
   mockDatabase.users.forEach(user => {
-    if (String(user.id) === id) {
+    if (user.id === id) {
       found = true;
       return res.json(user);
     };
@@ -69,7 +74,7 @@ app.put("/image", (req, res) => {
   const { id } = req.body;
   let found = false;
   mockDatabase.users.forEach(user => {
-    if (String(user.id) === id) {
+    if (user.id === id) {
       found = true;
       user.entries++;
       return res.json(user.entries);
@@ -78,6 +83,10 @@ app.put("/image", (req, res) => {
   if (!found) {
     res.status(400).json("no such user");
   };
+})
+
+app.post("/imageurl", (req, res) => {
+  image.handleApiCall(req, res);
 })
 
 app.listen(3000, () => {
