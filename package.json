@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/jeancarlosZ/face-recognition-app-api#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.21.2"
   },
   "devDependencies": {
