@@ -38,41 +38,45 @@ app.post("/signin", (req, res) => {
           .from("users")
           .where("email", "=", email)
           .then(user => res.json(user[0]))
-          .catch(err => res.status(400).json("Unable to get user."));
+          .catch(err => res.status(400).json("Unable to get user"));
       } else {
-        return res.status(400).json("Wrong credentials.");
+        return res.status(400).json("Wrong credentials");
       };
     })
-    .catch(err => res.status(400).json("Wrong credentials."));
+    .catch(err => res.status(400).json("Wrong credentials"));
 })
 
 app.post("/register", (req, res) => {
   const { name, email, password } = req.body;
-  bcrypt.hash(password, saltRounds)
-    .then(function (hash) {
-      db.transaction(trx => {
-        trx.insert({
-          hash: hash,
-          email: email
-        })
-          .into("login")
-          .returning("email")
-          .then(loginEmail => {
-            return trx("users")
-              .returning("*")
-              .insert({
-                name: name,
-                email: loginEmail[0].email,
-                joined: new Date()
-              })
-              .then(user => res.json(user[0]));
+  if (!name || name.trim() === "" || !email || email.trim() === "" || !password || password.trim() === "") {
+    return res.status(400).json("Name, email, and password cannot be empty");
+  } else {
+    bcrypt.hash(password, saltRounds)
+      .then(function (hash) {
+        db.transaction(trx => {
+          trx.insert({
+            hash: hash,
+            email: email
           })
-          .then(trx.commit)
-          .catch(trx.rollback);
+            .into("login")
+            .returning("email")
+            .then(loginEmail => {
+              return trx("users")
+                .returning("*")
+                .insert({
+                  name: name,
+                  email: loginEmail[0].email,
+                  joined: new Date()
+                })
+                .then(user => res.json(user[0]));
+            })
+            .then(trx.commit)
+            .catch(trx.rollback);
+        })
+          .catch(err => res.status(400).json("Unable to register"));
       })
-        .catch(err => res.status(400).json("If you already have an account, please sign in instead."));
-    })
-    .catch(err => res.status(400).json("The email and password fields need to be valid and not empty."));
+      .catch(err => res.status(400).json("Unable to register"));
+  }
 })
 
 app.get("/profile/:id", (req, res) => {
@@ -84,10 +88,10 @@ app.get("/profile/:id", (req, res) => {
       if (user.length) {
         return res.json(user[0]);
       } else {
-        return res.status(400).json("Not found.");
+        return res.status(400).json("Not found");
       };
     })
-    .catch(err => res.status(400).json("Error getting user."));
+    .catch(err => res.status(400).json("Error getting user"));
 })
 
 app.put("/image", (req, res) => {
@@ -98,7 +102,7 @@ app.put("/image", (req, res) => {
     .increment("entries", 1)
     .returning("entries")
     .then(entries => res.json(entries[0].entries))
-    .catch(err => res.status(400).json("Unable to get entries."));
+    .catch(err => res.status(400).json("Unable to get entries"));
 })
 
 app.post("/imageurl", (req, res) => { image.handleApiCall(req, res) })
