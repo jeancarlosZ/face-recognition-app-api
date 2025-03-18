@@ -1,16 +1,16 @@
 const { ClarifaiStub, grpc } = require("clarifai-nodejs-grpc");
 
-// Your PAT (Personal Access Token) can be found in the Account's Security section after logging into the Clarifai website
-const PAT = "YOUR_PAT_HERE";
 const USER_ID = "clarifai";
 const APP_ID = "main";
 const MODEL_ID = "face-detection";
 const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
 
-metadata.set("authorization", "Key " + PAT);
+const handleApiCall = (req, res, CLARIFAI_PAT) => {
+  const PAT = CLARIFAI_PAT;
 
-const handleApiCall = (req, res) => {
+  metadata.set("authorization", "Key " + PAT);
+
   stub.PostModelOutputs(
     {
       user_app_id: {
@@ -32,10 +32,12 @@ const handleApiCall = (req, res) => {
     metadata,
     (err, response) => {
       if (err) {
+        res.status(400).json("unable to work with API");
         throw new Error(err);
       }
 
       if (response.status.code !== 10000) {
+        res.status(400).json("unable to work with API");
         throw new Error("Post model outputs failed, status: " + response.status.description);
       }
 
@@ -64,6 +66,19 @@ const handleApiCall = (req, res) => {
   );
 }
 
+const handleImage = (req, res, db) => {
+  const { id } = req.body;
+
+  db.select("*")
+    .from("users")
+    .where("id", "=", id)
+    .increment("entries", 1)
+    .returning("entries")
+    .then(entries => res.json(entries[0].entries))
+    .catch(err => res.status(400).json("Unable to get entries"));
+}
+
 module.exports = {
-  handleApiCall
+  handleApiCall,
+  handleImage
 };
