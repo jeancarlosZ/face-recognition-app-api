@@ -2,8 +2,9 @@ const handleSignin = (req, res, bcrypt, db) => {
   const { email, password } = req.body;
 
   if (!email || email.trim() === "" || !password || password.trim() === "") {
-    return res.status(400).json("Incorrect form submission");
+    return res.status(400).json("Fields cannot be empty");
   }
+
   db.select("email", "hash")
     .from("login")
     .where("email", "=", email)

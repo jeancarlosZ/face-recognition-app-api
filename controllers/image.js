@@ -7,9 +7,13 @@ const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
 
 const handleApiCall = (req, res, CLARIFAI_PAT) => {
-  const PAT = CLARIFAI_PAT;
+  const { imageUrlEntry } = req.body;
 
-  metadata.set("authorization", "Key " + PAT);
+  if (!imageUrlEntry || imageUrlEntry.trim() === "") {
+    return res.status(400).json("Field cannot be empty");
+  }
+
+  metadata.set("authorization", "Key " + CLARIFAI_PAT);
 
   stub.PostModelOutputs(
     {
@@ -22,7 +26,7 @@ const handleApiCall = (req, res, CLARIFAI_PAT) => {
         {
           data: {
             image: {
-              url: req.body.input,
+              url: imageUrlEntry,
               allow_duplicate_url: true
             }
           }

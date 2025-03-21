@@ -1,6 +1,10 @@
 const handleProfileGet = (req, res, db) => {
   const { id } = req.params;
 
+  if (!id || id.trim() === "") {
+    return res.status(400).json("Id cannot be empty");
+  }
+
   db.select("*")
     .from("users")
     .where("id", "=", id)

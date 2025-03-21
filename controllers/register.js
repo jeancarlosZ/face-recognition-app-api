@@ -3,8 +3,9 @@ const handleRegister = (req, res, bcrypt, db) => {
   const saltRounds = 10;
 
   if (!name || name.trim() === "" || !email || email.trim() === "" || !password || password.trim() === "") {
-    return res.status(400).json("Incorrect form submission");
+    return res.status(400).json("Fields cannot be empty");
   }
+
   bcrypt.hash(password, saltRounds)
     .then(function (hash) {
       db.transaction(trx => {

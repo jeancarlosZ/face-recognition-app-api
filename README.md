@@ -84,7 +84,7 @@ Create a free account for [Supabase](https://supabase.com/) and create a project
 
 Create the database tables following the `sql` criteria from the `Creating Local Database and Tables` section above, and create access policies for them.
 
-Toggle on `Enforce SSL on incoming connections`; this can be found in `Dashboard` ==> Click on Your Actual Project ==> Left-Hand Menu ==> Click on `Project Settings` ==> Click on `Database` ==> Scroll down to `SSL Configuration`. You can download the `SSL Certificate` underneath the toggle button. Replace `CONTENTS_INSIDE_SSL_CERTIFICATE` in the `.env` file with the certificate data inside the `SSL Certificate`.
+Toggle on `Enforce SSL on incoming connections`; this can be found in `Dashboard` > Click on Your Actual Project > Left-Hand Menu > Click on `Project Settings` > Click on `Database` > Scroll down to `SSL Configuration`. You can download the `SSL Certificate` underneath the toggle button. Replace `CONTENTS_INSIDE_SSL_CERTIFICATE` in the `.env` file with the certificate data inside the `SSL Certificate`.
 
 ## Choice of Supabase or Local Database
 
