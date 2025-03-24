@@ -1,3 +1,23 @@
+# Temporary files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# System files
 .DS_Store
-/node_modules/
-.env
+Thumbs.db
+
+# Cache files (if any)
+cache/
+
+# Other build or deployment artifacts
+build/
+dist/
+node_modules/
+vendor/
+
+# If you're using Docker, ignore Docker related files
+docker-compose.override.yml
+Dockerfile
+*.env
