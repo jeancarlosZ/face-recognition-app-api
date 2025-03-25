@@ -126,13 +126,13 @@ npm start
 Generate secret and encryption keys to be stored in environment variables by uncommenting the following in server.js:
 
 ```js
-jwtUtils.generateSecretEncryptionKeys();
+generateSecretEncryptionKeys();
 ```
 
 Replace `YOUR_SECRET_KEY` in the `.env` file with the value of `Base64 Secret Key:` in the console log when running the server locally. Replace `YOUR_ENCRYPTION_KEY` in the `.env` file with the value of `Base64 Encryption Key:` in the console log when running the server locally. Comment out the previous line when done:
 
 ```js
-jwtUtils.generateSecretEncryptionKeys();
+generateSecretEncryptionKeys();
 ```
 
 ## Deployment

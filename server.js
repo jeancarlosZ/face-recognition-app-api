@@ -4,11 +4,12 @@ const cors = require("cors");
 const knex = require("knex");
 require("dotenv").config();
 
+const { generateSecretEncryptionKeys } = require("./utils/jwtUtils");
 const image = require("./controllers/image");
 const signin = require("./controllers/signin");
 const register = require("./controllers/register");
 const profile = require("./controllers/profile");
-const jwtUtils = require("./utils/jwtUtils");
+const authMiddleware = require("./middlewares/authMiddleware");
 
 const PORT = process.env.PORT || 3000;
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -31,7 +32,7 @@ if (!DATABASE_URL) {
 
 /*
 // Generate secret and encryption keys to be stored in environment variables
-jwtUtils.generateSecretEncryptionKeys();
+generateSecretEncryptionKeys();
 */
 
 const db = knex({
@@ -42,12 +43,12 @@ const db = knex({
     ssl: { ca: CA_CERTIFICATE },
 
     /* 
-        // Local Database
-        host: "127.0.0.1",
-        port: 5432,
-        user: "",
-        password: "",
-        database: "face-recognition-api"
+    // Local Database
+    host: "127.0.0.1",
+    port: 5432,
+    user: "",
+    password: "",
+    database: "face-recognition-api"
      */
   },
 });
@@ -57,12 +58,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req, res) => { res.send(db.users) });
+app.get("/", (req, res) => { res.send("Server Online") });
 app.post("/signin", (req, res) => { signin.handleSignin(req, res, bcrypt, db) });
 app.post("/register", (req, res) => { register.handleRegister(req, res, bcrypt, db) });
-app.get("/profile/:id", (req, res) => { profile.handleProfileGet(req, res, db) });
-app.put("/image", (req, res) => { image.handleImage(req, res, db) });
-app.post("/imageurl", (req, res) => { image.handleApiCall(req, res) });
+app.get("/profile/:id", authMiddleware, (req, res) => { profile.handleProfileGet(req, res, db) });
+app.put("/image", authMiddleware, (req, res) => { image.handleImage(req, res, db) });
+app.post("/imageurl", authMiddleware, (req, res) => { image.handleApiCall(req, res) });
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

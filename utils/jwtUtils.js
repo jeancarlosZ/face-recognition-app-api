@@ -18,53 +18,33 @@ const generateSecretEncryptionKeys = () => {
 }
 
 const generateJWT = async (payload) => {
-  try {
-    const jwt = await new SignJWT(payload)
-      .setProtectedHeader({ alg: JWS_ALGORITHM })
-      .setExpirationTime("1h")
-      .sign(SECRET_KEY_BUFFER);
+  const signedJWT = await new SignJWT(payload)
+    .setProtectedHeader({ alg: JWS_ALGORITHM })
+    .setExpirationTime("1h")
+    .sign(SECRET_KEY_BUFFER);
 
-    return jwt;
-  } catch (error) {
-    console.error("Error generating JWT:", error);
-    throw new Error("Failed to generate JWT");
-  }
+  return signedJWT;
 }
 
-const verifyJWT = async (jwt) => {
-  try {
-    const { payload } = await jwtVerify(jwt, SECRET_KEY_BUFFER);
+const verifyJWT = async (signedJWT) => {
+  const { payload } = await jwtVerify(signedJWT, SECRET_KEY_BUFFER);
 
-    return payload;
-  } catch (error) {
-    console.error("Error verifying JWT:", error);
-    throw new Error("Invalid or expired JWT");
-  }
+  return payload;
 }
 
 const encryptJWT = async (signedJWT) => {
-  try {
-    const encryptedJWT = await new EncryptJWT(signedJWT)
-      .setProtectedHeader({ alg: JWE_ALGORITHM, enc: JWE_ENCRYPTION })
-      .setExpirationTime("1h")
-      .encrypt(ENCRYPTION_KEY_BUFFER);
+  const encryptedJWT = await new EncryptJWT(signedJWT)
+    .setProtectedHeader({ alg: JWE_ALGORITHM, enc: JWE_ENCRYPTION })
+    .setExpirationTime("1h")
+    .encrypt(ENCRYPTION_KEY_BUFFER);
 
-    return encryptedJWT;
-  } catch (error) {
-    console.error("Error encrypting JWT:", error);
-    throw new Error("Failed to encrypt JWT");
-  }
+  return encryptedJWT;
 }
 
 const decryptJWT = async (encryptedJWT) => {
-  try {
-    const { payload } = await jwtDecrypt(encryptedJWT, ENCRYPTION_KEY_BUFFER);
+  const { payload } = await jwtDecrypt(encryptedJWT, ENCRYPTION_KEY_BUFFER);
 
-    return payload;
-  } catch (error) {
-    console.error("Error decrypting JWT:", error);
-    throw new Error("Failed to decrypt JWT");
-  }
+  return payload;
 }
 
 module.exports = {

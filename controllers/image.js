@@ -13,7 +13,7 @@ const handleApiCall = (req, res) => {
   const { imageUrlEntry } = req.body;
 
   if (!imageUrlEntry || imageUrlEntry.trim() === "") {
-    return res.status(400).json("Field cannot be empty");
+    return res.status(400).json({ message: "Field cannot be empty" });
   }
 
   stub.PostModelOutputs(
@@ -37,13 +37,11 @@ const handleApiCall = (req, res) => {
     metadata,
     (err, response) => {
       if (err) {
-        res.status(400).json("unable to work with API");
-        throw new Error(err);
+        return res.status(400).json({ message: `Unable to work with Clarifai API: ${err}` });
       }
 
       if (response.status.code !== 10000) {
-        res.status(400).json("unable to work with API");
-        throw new Error("Post model outputs failed, status: " + response.status.description);
+        return res.status(400).json({ message: `Unable to work with Clarifai API: Post model outputs failed, status: ${response.status.description}` });
       }
 
       const regions = response.outputs[0].data.regions;
@@ -74,8 +72,8 @@ const handleApiCall = (req, res) => {
 const handleImage = (req, res, db) => {
   const { id } = req.body;
 
-  if (!id || id.trim() === "") {
-    return res.status(400).json("Id cannot be empty");
+  if (!id) {
+    return res.status(400).json({ message: "Id cannot be empty" });
   }
 
   db.select("*")
@@ -84,7 +82,7 @@ const handleImage = (req, res, db) => {
     .increment("entries", 1)
     .returning("entries")
     .then(entries => res.json(entries[0].entries))
-    .catch(err => res.status(400).json("Unable to get entries"));
+    .catch(err => res.status(400).json({ message: "Unable to get entries" }));
 }
 
 module.exports = {
