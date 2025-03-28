@@ -14,27 +14,27 @@ module.exports = async (req, res, next) => {
     next();
   } catch (err) {
     if (err instanceof errors.JWTInvalid) {
-      return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+      return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
     if (err instanceof errors.JWTExpired) {
-      return res.status(401).json({ message: 'Unauthorized: Token expired' });
+      return res.status(401).json({ message: "Unauthorized: Token expired" });
     }
     if (err instanceof errors.JWTClaimValidationFailed) {
-      return res.status(401).json({ message: 'Unauthorized: Token validation failed' });
+      return res.status(401).json({ message: "Unauthorized: Token validation failed" });
     }
     if (err instanceof errors.JWEInvalid) {
-      return res.status(400).json({ message: 'Bad Request: Invalid JWE token' });
+      return res.status(400).json({ message: "Bad Request: Invalid JWE token" });
     }
     if (err instanceof errors.JWEDecryptionFailed) {
-      return res.status(400).json({ message: 'Bad Request: Decryption failed' });
+      return res.status(400).json({ message: "Bad Request: Decryption failed" });
     }
     if (err instanceof errors.JOSEAlgNotAllowed) {
-      return res.status(400).json({ message: 'Bad Request: Encryption or algorithm invalid' });
+      return res.status(400).json({ message: "Bad Request: Encryption or algorithm invalid" });
     }
     if (err instanceof errors.JOSEError) {
-      return res.status(500).json({ message: 'Internal Server Error: JOSE processing failed' });
+      return res.status(500).json({ message: "Internal Server Error: JOSE processing failed" });
     }
     console.error(err);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

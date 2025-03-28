@@ -17,6 +17,7 @@ const CA_CERTIFICATE = process.env.SUPABASE_CA_CERT;
 const CLARIFAI_PAT = process.env.CLARIFAI_PAT;
 const SECRET_KEY = process.env.SECRET_KEY;
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 if (!DATABASE_URL) {
   throw new Error("Connection string is required but not set in environment variable DATABASE_URL.");
@@ -28,6 +29,8 @@ if (!DATABASE_URL) {
   throw new Error("Secret key is required but not set in environment variable SECRET_KEY.");
 } else if (!ENCRYPTION_KEY) {
   throw new Error("Encryption key is required but not set in environment variable ENCRYPTION_KEY.");
+} else if (!FRONTEND_URL) {
+  throw new Error("Frontend URL is required but not set in environment variable FRONTEND_URL.");
 }
 
 /*
@@ -53,10 +56,15 @@ const db = knex({
   },
 });
 
+const corsOptions = {
+  origin: FRONTEND_URL,
+  optionsSuccessStatus: 200
+};
+
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.get("/", (req, res) => { res.send("Server Online") });
 app.post("/signin", (req, res) => { signin.handleSignin(req, res, bcrypt, db) });

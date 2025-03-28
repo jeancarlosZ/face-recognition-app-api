@@ -74,6 +74,7 @@ DATABASE_URL="YOUR_CONNECTION_STRING"
 SUPABASE_CA_CERT="CONTENTS_INSIDE_SSL_CERTIFICATE"
 SECRET_KEY="YOUR_SECRET_KEY"
 ENCRYPTION_KEY="YOUR_ENCRYPTION_KEY"
+FRONTEND_URL="YOUR_FRONTEND_URL"
 ```
 
 ## Clarifai Account
@@ -137,4 +138,4 @@ generateSecretEncryptionKeys();
 
 ## Deployment
 
-Create a free account for [Render](https://render.com/docs) and deploy with the environment variables in the `.env` file.
+Replace `YOUR_FRONTEND_URL` in the `.env` file with the value of your frontend application URL. Create a free account for [Render](https://render.com/docs) and deploy with the environment variables in the `.env` file.
