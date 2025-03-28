@@ -64,6 +64,7 @@ app.post("/register", (req, res) => { register.handleRegister(req, res, bcrypt, 
 app.get("/profile/:id", authMiddleware, (req, res) => { profile.handleProfileGet(req, res, db) });
 app.put("/image", authMiddleware, (req, res) => { image.handleImage(req, res, db) });
 app.post("/imageurl", authMiddleware, (req, res) => { image.handleApiCall(req, res) });
+app.post("/check-image", authMiddleware, (req, res) => { image.checkIfImage(req, res) });
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

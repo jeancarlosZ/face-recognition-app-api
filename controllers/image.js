@@ -64,7 +64,7 @@ const handleApiCall = (req, res) => {
         faceBoxes.push(faceBox);
       });
 
-      res.json(faceBoxes)
+      return res.json(faceBoxes);
     }
   );
 }
@@ -85,7 +85,25 @@ const handleImage = (req, res, db) => {
     .catch(err => res.status(400).json({ message: "Unable to get entries" }));
 }
 
+const checkIfImage = async (req, res) => {
+  const { imageUrlEntry } = req.body;
+
+  try {
+    const response = await fetch(imageUrlEntry, { method: "HEAD" });
+    const contentType = response.headers.get("Content-Type");
+
+    if (contentType && contentType.startsWith("image/")) {
+      return res.json(true);
+    } else {
+      return res.json(false);
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch image headers:", err });
+  }
+}
+
 module.exports = {
   handleApiCall,
-  handleImage
+  handleImage,
+  checkIfImage
 };
