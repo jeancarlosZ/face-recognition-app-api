@@ -1,15 +1,20 @@
 const { ClarifaiStub, grpc } = require("clarifai-nodejs-grpc");
 
+const PAT = process.env.CLARIFAI_PAT;
 const USER_ID = "clarifai";
 const APP_ID = "main";
 const MODEL_ID = "face-detection";
 const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
 
-const handleApiCall = (req, res, CLARIFAI_PAT) => {
-  const PAT = CLARIFAI_PAT;
+metadata.set("authorization", "Key " + PAT);
 
-  metadata.set("authorization", "Key " + PAT);
+const handleApiCall = (req, res) => {
+  const { imageUrlEntry } = req.body;
+
+  if (!imageUrlEntry || imageUrlEntry.trim() === "") {
+    return res.status(400).json({ message: "Field cannot be empty" });
+  }
 
   stub.PostModelOutputs(
     {
@@ -22,7 +27,7 @@ const handleApiCall = (req, res, CLARIFAI_PAT) => {
         {
           data: {
             image: {
-              url: req.body.input,
+              url: imageUrlEntry,
               allow_duplicate_url: true
             }
           }
@@ -32,13 +37,11 @@ const handleApiCall = (req, res, CLARIFAI_PAT) => {
     metadata,
     (err, response) => {
       if (err) {
-        res.status(400).json("unable to work with API");
-        throw new Error(err);
+        return res.status(400).json({ message: `Unable to work with Clarifai API: ${err}` });
       }
 
       if (response.status.code !== 10000) {
-        res.status(400).json("unable to work with API");
-        throw new Error("Post model outputs failed, status: " + response.status.description);
+        return res.status(400).json({ message: `Unable to work with Clarifai API: Post model outputs failed, status: ${response.status.description}` });
       }
 
       const regions = response.outputs[0].data.regions;
@@ -61,7 +64,7 @@ const handleApiCall = (req, res, CLARIFAI_PAT) => {
         faceBoxes.push(faceBox);
       });
 
-      res.json(faceBoxes)
+      return res.json(faceBoxes);
     }
   );
 }
@@ -69,16 +72,38 @@ const handleApiCall = (req, res, CLARIFAI_PAT) => {
 const handleImage = (req, res, db) => {
   const { id } = req.body;
 
+  if (!id) {
+    return res.status(400).json({ message: "Id cannot be empty" });
+  }
+
   db.select("*")
     .from("users")
     .where("id", "=", id)
     .increment("entries", 1)
     .returning("entries")
     .then(entries => res.json(entries[0].entries))
-    .catch(err => res.status(400).json("Unable to get entries"));
+    .catch(err => res.status(400).json({ message: "Unable to get entries" }));
+}
+
+const checkIfImage = async (req, res) => {
+  const { imageUrlEntry } = req.body;
+
+  try {
+    const response = await fetch(imageUrlEntry, { method: "HEAD" });
+    const contentType = response.headers.get("Content-Type");
+
+    if (contentType && contentType.startsWith("image/")) {
+      return res.json(true);
+    } else {
+      return res.json(false);
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch image headers:", err });
+  }
 }
 
 module.exports = {
   handleApiCall,
-  handleImage
+  handleImage,
+  checkIfImage
 };

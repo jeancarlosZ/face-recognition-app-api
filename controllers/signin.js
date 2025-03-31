@@ -1,9 +1,12 @@
+const { generateJWT, encryptJWT } = require("../utils/jwtUtils");
+
 const handleSignin = (req, res, bcrypt, db) => {
   const { email, password } = req.body;
 
   if (!email || email.trim() === "" || !password || password.trim() === "") {
-    return res.status(400).json("Incorrect form submission");
+    return res.status(400).json({ message: "Fields cannot be empty" });
   }
+
   db.select("email", "hash")
     .from("login")
     .where("email", "=", email)
@@ -13,13 +16,30 @@ const handleSignin = (req, res, bcrypt, db) => {
         return db.select("*")
           .from("users")
           .where("email", "=", email)
-          .then(user => res.json(user[0]))
-          .catch(err => res.status(400).json("Unable to get user"));
+          .then(async (userArr) => {
+            try {
+              const user = userArr[0];
+              const token = await generateJWT({ userId: user.id });
+              const encryptedToken = await encryptJWT({ token });
+
+              res.cookie("auth-token", encryptedToken, {
+                httpOnly: true, // Prevent access via JavaScript
+                secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+                sameSite: "Strict", // Prevent cross-site requests
+                maxAge: 60 * 60 * 1000 // 1 hour expiration
+              });
+
+              return res.json({ user });
+            } catch (err) {
+              return res.status(500).json({ message: "Error signing or encrypting JWT" });
+            }
+          })
+          .catch(err => res.status(400).json({ message: "Unable to get user" }));
       } else {
-        return res.status(400).json("Wrong credentials");
+        return res.status(401).json({ message: "Wrong credentials" });
       };
     })
-    .catch(err => res.status(400).json("Wrong credentials"));
+    .catch(err => res.status(401).json({ message: "Wrong credentials" }));
 }
 
 module.exports = {
