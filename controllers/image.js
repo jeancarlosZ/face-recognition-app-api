@@ -98,7 +98,7 @@ const checkIfImage = async (req, res) => {
       return res.json(false);
     }
   } catch (err) {
-    return res.status(500).json({ message: "Failed to fetch image headers:", err });
+    return res.status(500).json({ message: `Failed to fetch image headers: ${err}` });
   }
 }
 

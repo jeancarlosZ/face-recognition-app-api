@@ -84,9 +84,9 @@ app.use(cookieParser(COOKIE_SECRET_KEY));
 app.use(session({
   secret: SESSION_SECRET_KEY_BUFFER,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === "production", // Set secure cookies in production
+    secure: true, // Set secure cookies
     httpOnly: true, // Protect cookie from client-side access
     maxAge: 60 * 60 * 1000, // 1 hour expiration
     sameSite: "Strict" // CSRF protection

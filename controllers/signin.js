@@ -24,7 +24,7 @@ const handleSignin = (req, res, bcrypt, db) => {
 
               res.cookie("auth-token", encryptedToken, {
                 httpOnly: true, // Prevent access via JavaScript
-                secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+                secure: true, // Use secure cookies
                 sameSite: "Strict", // Prevent cross-site requests
                 maxAge: 60 * 60 * 1000 // 1 hour expiration
               });
