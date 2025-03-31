@@ -72,9 +72,11 @@ Create a `.env` file in the root directory of this project. Add the following to
 CLARIFAI_PAT="YOUR_PAT"
 DATABASE_URL="YOUR_CONNECTION_STRING"
 SUPABASE_CA_CERT="CONTENTS_INSIDE_SSL_CERTIFICATE"
-SECRET_KEY="YOUR_SECRET_KEY"
-ENCRYPTION_KEY="YOUR_ENCRYPTION_KEY"
+JWT_SECRET_KEY="YOUR_JWT_SECRET_KEY"
+JWT_ENCRYPTION_KEY="YOUR_JWT_ENCRYPTION_KEY"
 FRONTEND_URL="YOUR_FRONTEND_URL"
+COOKIE_SECRET_KEY="YOUR_COOKIE_SECRET_KEY"
+SESSION_SECRET_KEY="YOUR_SESSION_SECRET_KEY"
 ```
 
 ## Clarifai Account
@@ -130,7 +132,7 @@ Generate secret and encryption keys to be stored in environment variables by unc
 generateSecretEncryptionKeys();
 ```
 
-Replace `YOUR_SECRET_KEY` in the `.env` file with the value of `Base64 Secret Key:` in the console log when running the server locally. Replace `YOUR_ENCRYPTION_KEY` in the `.env` file with the value of `Base64 Encryption Key:` in the console log when running the server locally. Comment out the previous line when done:
+Replace `YOUR_JWT_SECRET_KEY` in the `.env` file with the value of `Base64 JWT Secret Key:` in the console log when running the server locally. Replace `YOUR_JWT_ENCRYPTION_KEY` in the `.env` file with the value of `Base64 JWT Encryption Key:` in the console log when running the server locally. Replace `YOUR_COOKIE_SECRET_KEY` in the `.env` file with the value of `Hex Cookie Secret Key:` in the console log when running the server locally. Replace `YOUR_SESSION_SECRET_KEY` in the `.env` file with the value of `Base64 Session Secret Key:` in the console log when running the server locally. Comment out the previous line when done:
 
 ```js
 generateSecretEncryptionKeys();

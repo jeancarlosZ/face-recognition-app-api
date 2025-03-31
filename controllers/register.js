@@ -31,10 +31,14 @@ const handleRegister = (req, res, bcrypt, db) => {
                   const token = await generateJWT({ userId: user.id });
                   const encryptedToken = await encryptJWT({ token });
 
-                  return res.json({
-                    encryptedToken,
-                    user
+                  res.cookie("auth-token", encryptedToken, {
+                    httpOnly: true, // Prevent access via JavaScript
+                    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+                    sameSite: "Strict", // Prevent cross-site requests
+                    maxAge: 60 * 60 * 1000 // 1 hour expiration
                   });
+
+                  return res.json({ user });
                 } catch (err) {
                   return res.status(500).json({ message: "Error signing or encrypting JWT" });
                 }

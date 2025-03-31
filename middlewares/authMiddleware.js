@@ -2,7 +2,7 @@ const { errors } = require("jose");
 const { decryptJWT, verifyJWT } = require("../utils/jwtUtils");
 
 module.exports = async (req, res, next) => {
-  const encryptedToken = req.header("Authorization")?.replace("Bearer ", "");
+  const encryptedToken = req.cookies["auth-token"];
 
   if (!encryptedToken) {
     return res.status(403).json({ message: "Token required" });
@@ -34,7 +34,7 @@ module.exports = async (req, res, next) => {
     if (err instanceof errors.JOSEError) {
       return res.status(500).json({ message: "Internal Server Error: JOSE processing failed" });
     }
-    console.error(err);
+    console.log(err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
