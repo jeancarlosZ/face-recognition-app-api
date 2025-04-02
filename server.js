@@ -6,6 +6,7 @@ require("dotenv").config();
 const morgan = require("morgan");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
 
 const { generateSecretEncryptionKeys } = require("./utils/jwtUtils");
 const image = require("./controllers/image");
@@ -43,8 +44,8 @@ generateSecretEncryptionKeys();
 */
 
 const corsOptions = {
-  origin: FRONTEND_URL,
-  credentials: true
+  origin: FRONTEND_URL, // Allowed URL for making requests to the server
+  credentials: true // Allow cookies in requests
 };
 
 const app = express();
@@ -67,11 +68,19 @@ const db = knex({
   },
 });
 
-app.use(helmet()); // Help secure Express apps by setting HTTP response headers
-app.use(morgan("combined")); // Log request details to monitor for suspicious activity
-app.use(express.json()); // Middleware to parse JSON requests
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 15, // Limit each IP to 15 requests per windowMs
+  standardHeaders: "draft-8", // draft-8: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
 app.use(cors(corsOptions));
-app.use(cookieParser());
+app.use(helmet()); // Help secure Express apps by setting HTTP response headers
+app.use(express.json()); // Middleware to parse JSON requests
+app.use(cookieParser()); // Handle cookie-based data in requests and responses
+app.use("/imageurl", limiter);
+app.use(morgan("combined")); // Log request details to monitor for suspicious activity
 
 app.get("/", (req, res) => { res.send("Server Online") });
 app.post("/signin", (req, res) => { signin.handleSignin(req, res, bcrypt, db) });

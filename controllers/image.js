@@ -37,11 +37,13 @@ const handleApiCall = (req, res) => {
     metadata,
     (err, response) => {
       if (err) {
-        return res.status(400).json({ message: `Unable to work with Clarifai API: ${err}` });
+        console.log(`Unable to work with Clarifai API: ${err}`);
+        return res.status(400).json({ message: "Unable to work with Clarifai API" });
       }
 
       if (response.status.code !== 10000) {
-        return res.status(400).json({ message: `Unable to work with Clarifai API: Post model outputs failed, status: ${response.status.description}` });
+        console.log(`Unable to work with Clarifai API: Post model outputs failed, status: ${response.status.description}`);
+        return res.status(400).json({ message: "Unable to work with Clarifai API" });
       }
 
       const regions = response.outputs[0].data.regions;
@@ -94,7 +96,8 @@ const checkIfImage = async (req, res) => {
       return res.json(false);
     }
   } catch (err) {
-    return res.status(500).json({ message: `Failed to fetch image headers: ${err}` });
+    console.log(`Failed to fetch image headers: ${err}`);
+    return res.status(500).json({ message: "Failed to fetch image headers" });
   }
 }
 
