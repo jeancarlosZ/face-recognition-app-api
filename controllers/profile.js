@@ -1,8 +1,11 @@
 const handleProfileGet = (req, res, db) => {
   const { id } = req.params;
+  const userId = req.user.id;
 
   if (!id || id.trim() === "") {
     return res.status(400).json({ message: "Id cannot be empty" });
+  } else if (id !== userId) {
+    return res.status(403).json({ message: "Forbidden" });
   }
 
   db.select("*")

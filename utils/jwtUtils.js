@@ -22,13 +22,9 @@ const loadJwtLibrary = async () => {
 const generateSecretEncryptionKeys = () => {
   const jwtSecretKey = crypto.randomBytes(32).toString("base64");
   const jwtEncryptionKey = crypto.randomBytes(32).toString("base64");
-  const cookieSecretKey = crypto.randomBytes(32).toString("hex");
-  const sessionSecretKey = crypto.randomBytes(32).toString("base64");
 
   console.log("Base64 JWT Secret Key:", jwtSecretKey);
   console.log("Base64 JWT Encryption Key:", jwtEncryptionKey);
-  console.log("Hex Cookie Secret Key:", cookieSecretKey);
-  console.log("Base64 Session Secret Key:", sessionSecretKey);
 }
 
 const generateJWT = async (payload) => {

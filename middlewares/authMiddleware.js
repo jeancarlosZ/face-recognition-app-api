@@ -9,7 +9,9 @@ module.exports = async (req, res, next) => {
 
   try {
     const { token } = await decryptJWT(encryptedToken);
-    await verifyJWT(token);
+    const { userId } = await verifyJWT(token);
+
+    req.user = { id: userId };
     next();
   } catch (err) {
     await loadJwtLibrary();

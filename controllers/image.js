@@ -70,15 +70,11 @@ const handleApiCall = (req, res) => {
 }
 
 const handleImage = (req, res, db) => {
-  const { id } = req.body;
-
-  if (!id) {
-    return res.status(400).json({ message: "Id cannot be empty" });
-  }
+  const userId = req.user.id;
 
   db.select("*")
     .from("users")
-    .where("id", "=", id)
+    .where("id", "=", userId)
     .increment("entries", 1)
     .returning("entries")
     .then(entries => res.json(entries[0].entries))
