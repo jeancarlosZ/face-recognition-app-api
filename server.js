@@ -15,6 +15,8 @@ const register = require("./controllers/register");
 const profile = require("./controllers/profile");
 const logout = require("./controllers/logout");
 const authMiddleware = require("./middlewares/authMiddleware");
+const { validateImageUrl, validateImageCount } = require("./validators/imageValidator");
+const { validateRegistration, validateLogin, validateUserProfile } = require("./validators/userValidator");
 
 const PORT = process.env.PORT || 3000;
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -69,8 +71,8 @@ const db = knex({
 });
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 15, // Limit each IP to 15 requests per windowMs
+  windowMs: 60 * 60 * 1000, // 1 hour
+  limit: 10, // Limit each IP to 10 requests per windowMs
   standardHeaders: "draft-8", // draft-8: combined `RateLimit` header
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
@@ -83,12 +85,12 @@ app.use("/imageurl", limiter);
 app.use(morgan("combined")); // Log request details to monitor for suspicious activity
 
 app.get("/", (req, res) => { res.send("Server Online") });
-app.post("/signin", (req, res) => { signin.handleSignin(req, res, bcrypt, db) });
-app.post("/register", (req, res) => { register.handleRegister(req, res, bcrypt, db) });
-app.get("/profile/:id", authMiddleware, (req, res) => { profile.handleProfileGet(req, res, db) });
-app.put("/image", authMiddleware, (req, res) => { image.handleImage(req, res, db) });
-app.post("/imageurl", authMiddleware, (req, res) => { image.handleApiCall(req, res) });
-app.post("/check-image", authMiddleware, (req, res) => { image.checkIfImage(req, res) });
+app.post("/signin", validateLogin, (req, res) => { signin.handleSignin(req, res, bcrypt, db) });
+app.post("/register", validateRegistration, (req, res) => { register.handleRegister(req, res, bcrypt, db) });
+app.get("/profile/:id", authMiddleware, validateUserProfile, (req, res) => { profile.handleProfileGet(req, res, db) });
+app.put("/image", authMiddleware, validateImageCount, (req, res) => { image.handleImage(req, res, db) });
+app.post("/imageurl", authMiddleware, validateImageUrl, (req, res) => { image.handleApiCall(req, res) });
+app.post("/check-image", authMiddleware, validateImageUrl, (req, res) => { image.checkIfImage(req, res) });
 app.post("/logout", (req, res) => { logout.handleLogout(req, res) });
 
 app.listen(PORT, () => {

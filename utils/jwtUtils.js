@@ -17,7 +17,7 @@ const loadJwtLibrary = async () => {
       console.log(`Error loading the JWT library: ${err}`);
     }
   }
-}
+};
 
 const generateSecretEncryptionKeys = () => {
   const jwtSecretKey = crypto.randomBytes(32).toString("base64");
@@ -25,7 +25,7 @@ const generateSecretEncryptionKeys = () => {
 
   console.log("Base64 JWT Secret Key:", jwtSecretKey);
   console.log("Base64 JWT Encryption Key:", jwtEncryptionKey);
-}
+};
 
 const generateJWT = async (payload) => {
   await loadJwtLibrary();
@@ -36,7 +36,7 @@ const generateJWT = async (payload) => {
     .sign(JWT_SECRET_KEY_BUFFER);
 
   return signedJWT;
-}
+};
 
 const verifyJWT = async (signedJWT) => {
   await loadJwtLibrary();
@@ -44,7 +44,7 @@ const verifyJWT = async (signedJWT) => {
   const { payload } = await jwtVerify(signedJWT, JWT_SECRET_KEY_BUFFER);
 
   return payload;
-}
+};
 
 const encryptJWT = async (signedJWT) => {
   await loadJwtLibrary();
@@ -55,7 +55,7 @@ const encryptJWT = async (signedJWT) => {
     .encrypt(JWT_ENCRYPTION_KEY_BUFFER);
 
   return encryptedJWT;
-}
+};
 
 const decryptJWT = async (encryptedJWT) => {
   await loadJwtLibrary();
@@ -63,7 +63,7 @@ const decryptJWT = async (encryptedJWT) => {
   const { payload } = await jwtDecrypt(encryptedJWT, JWT_ENCRYPTION_KEY_BUFFER);
 
   return payload;
-}
+};
 
 module.exports = {
   loadJwtLibrary,

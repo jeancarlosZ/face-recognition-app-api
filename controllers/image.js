@@ -10,10 +10,10 @@ const metadata = new grpc.Metadata();
 metadata.set("authorization", "Key " + PAT);
 
 const handleApiCall = (req, res) => {
-  const { imageUrlEntry } = req.body;
+  const { id, imageUrlEntry } = req.body;
 
-  if (!imageUrlEntry || imageUrlEntry.trim() === "") {
-    return res.status(400).json({ message: "Field cannot be empty" });
+  if (id !== req.user.id) {
+    return res.status(403).json({ message: "User ID does not match authenticated user" });
   }
 
   stub.PostModelOutputs(
@@ -69,22 +69,30 @@ const handleApiCall = (req, res) => {
       return res.json(faceBoxes);
     }
   );
-}
+};
 
 const handleImage = (req, res, db) => {
-  const userId = req.user.id;
+  const { id } = req.body;
+
+  if (id !== req.user.id) {
+    return res.status(403).json({ message: "User ID does not match authenticated user" });
+  }
 
   db.select("*")
     .from("users")
-    .where("id", "=", userId)
+    .where("id", "=", id)
     .increment("entries", 1)
     .returning("entries")
     .then(entries => res.json(entries[0].entries))
     .catch(err => res.status(400).json({ message: "Unable to get entries" }));
-}
+};
 
 const checkIfImage = async (req, res) => {
-  const { imageUrlEntry } = req.body;
+  const { id, imageUrlEntry } = req.body;
+
+  if (id !== req.user.id) {
+    return res.status(403).json({ message: "User ID does not match authenticated user" });
+  }
 
   try {
     const response = await fetch(imageUrlEntry, { method: "HEAD" });
@@ -99,7 +107,7 @@ const checkIfImage = async (req, res) => {
     console.log(`Failed to fetch image headers: ${err}`);
     return res.status(500).json({ message: "Failed to fetch image headers" });
   }
-}
+};
 
 module.exports = {
   handleApiCall,
