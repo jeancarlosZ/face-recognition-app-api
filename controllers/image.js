@@ -10,10 +10,10 @@ const metadata = new grpc.Metadata();
 metadata.set("authorization", "Key " + PAT);
 
 const handleApiCall = (req, res) => {
-  const { imageUrlEntry } = req.body;
+  const { id, imageUrlEntry } = req.body;
 
-  if (!imageUrlEntry || imageUrlEntry.trim() === "") {
-    return res.status(400).json({ message: "Field cannot be empty" });
+  if (id !== req.user.id) {
+    return res.status(403).json({ message: "User ID does not match authenticated user" });
   }
 
   stub.PostModelOutputs(
@@ -37,11 +37,13 @@ const handleApiCall = (req, res) => {
     metadata,
     (err, response) => {
       if (err) {
-        return res.status(400).json({ message: `Unable to work with Clarifai API: ${err}` });
+        console.log(`Unable to work with Clarifai API: ${err}`);
+        return res.status(400).json({ message: "Unable to work with Clarifai API" });
       }
 
       if (response.status.code !== 10000) {
-        return res.status(400).json({ message: `Unable to work with Clarifai API: Post model outputs failed, status: ${response.status.description}` });
+        console.log(`Unable to work with Clarifai API: Post model outputs failed, status: ${response.status.description}`);
+        return res.status(400).json({ message: "Unable to work with Clarifai API" });
       }
 
       const regions = response.outputs[0].data.regions;
@@ -67,13 +69,13 @@ const handleApiCall = (req, res) => {
       return res.json(faceBoxes);
     }
   );
-}
+};
 
 const handleImage = (req, res, db) => {
   const { id } = req.body;
 
-  if (!id) {
-    return res.status(400).json({ message: "Id cannot be empty" });
+  if (id !== req.user.id) {
+    return res.status(403).json({ message: "User ID does not match authenticated user" });
   }
 
   db.select("*")
@@ -83,10 +85,14 @@ const handleImage = (req, res, db) => {
     .returning("entries")
     .then(entries => res.json(entries[0].entries))
     .catch(err => res.status(400).json({ message: "Unable to get entries" }));
-}
+};
 
 const checkIfImage = async (req, res) => {
-  const { imageUrlEntry } = req.body;
+  const { id, imageUrlEntry } = req.body;
+
+  if (id !== req.user.id) {
+    return res.status(403).json({ message: "User ID does not match authenticated user" });
+  }
 
   try {
     const response = await fetch(imageUrlEntry, { method: "HEAD" });
@@ -98,9 +104,10 @@ const checkIfImage = async (req, res) => {
       return res.json(false);
     }
   } catch (err) {
-    return res.status(500).json({ message: "Failed to fetch image headers:", err });
+    console.log(`Failed to fetch image headers: ${err}`);
+    return res.status(500).json({ message: "Failed to fetch image headers" });
   }
-}
+};
 
 module.exports = {
   handleApiCall,

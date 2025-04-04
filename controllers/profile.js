@@ -1,8 +1,8 @@
 const handleProfileGet = (req, res, db) => {
   const { id } = req.params;
 
-  if (!id || id.trim() === "") {
-    return res.status(400).json({ message: "Id cannot be empty" });
+  if (id !== req.user.id) {
+    return res.status(403).json({ message: "User ID does not match authenticated user" });
   }
 
   db.select("*")
@@ -16,7 +16,7 @@ const handleProfileGet = (req, res, db) => {
       };
     })
     .catch(err => res.status(400).json({ message: "Error getting user" }));
-}
+};
 
 module.exports = {
   handleProfileGet

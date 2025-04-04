@@ -4,10 +4,6 @@ const handleRegister = (req, res, bcrypt, db) => {
   const { name, email, password } = req.body;
   const saltRounds = 10;
 
-  if (!name || name.trim() === "" || !email || email.trim() === "" || !password || password.trim() === "") {
-    return res.status(400).json({ message: "Fields cannot be empty" });
-  }
-
   bcrypt.hash(password, saltRounds)
     .then(function (hash) {
       db.transaction(trx => {
@@ -33,7 +29,7 @@ const handleRegister = (req, res, bcrypt, db) => {
 
                   res.cookie("auth-token", encryptedToken, {
                     httpOnly: true, // Prevent access via JavaScript
-                    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+                    secure: true, // Use secure cookies
                     sameSite: "Strict", // Prevent cross-site requests
                     maxAge: 60 * 60 * 1000 // 1 hour expiration
                   });
@@ -51,7 +47,7 @@ const handleRegister = (req, res, bcrypt, db) => {
         .catch(err => res.status(400).json({ message: "Unable to register" }));
     })
     .catch(err => res.status(400).json({ message: "Unable to register" }));
-}
+};
 
 module.exports = {
   handleRegister

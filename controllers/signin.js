@@ -3,10 +3,6 @@ const { generateJWT, encryptJWT } = require("../utils/jwtUtils");
 const handleSignin = (req, res, bcrypt, db) => {
   const { email, password } = req.body;
 
-  if (!email || email.trim() === "" || !password || password.trim() === "") {
-    return res.status(400).json({ message: "Fields cannot be empty" });
-  }
-
   db.select("email", "hash")
     .from("login")
     .where("email", "=", email)
@@ -24,7 +20,7 @@ const handleSignin = (req, res, bcrypt, db) => {
 
               res.cookie("auth-token", encryptedToken, {
                 httpOnly: true, // Prevent access via JavaScript
-                secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+                secure: true, // Use secure cookies
                 sameSite: "Strict", // Prevent cross-site requests
                 maxAge: 60 * 60 * 1000 // 1 hour expiration
               });
@@ -40,7 +36,7 @@ const handleSignin = (req, res, bcrypt, db) => {
       };
     })
     .catch(err => res.status(401).json({ message: "Wrong credentials" }));
-}
+};
 
 module.exports = {
   handleSignin
