@@ -1,6 +1,6 @@
 # face-recognition-app-api
 
-This server code along with a database handle the requests to the `Clarifai` API and manage users for the `Face-Recognition-App`.
+This backend server code along with a database handle the requests to the `Clarifai` API and manage users for the frontend [Face-Recognition-App](https://github.com/jeancarlosZ/Face-Recognition-App).
 
 ## Getting Started
 
@@ -74,7 +74,7 @@ DATABASE_URL="YOUR_CONNECTION_STRING"
 SUPABASE_CA_CERT="CONTENTS_INSIDE_SSL_CERTIFICATE"
 JWT_SECRET_KEY="YOUR_JWT_SECRET_KEY"
 JWT_ENCRYPTION_KEY="YOUR_JWT_ENCRYPTION_KEY"
-FRONTEND_URL="YOUR_FRONTEND_URL"
+FRONTEND_URL="http://localhost:5173"
 ```
 
 ## Clarifai Account
@@ -108,20 +108,6 @@ Also, uncomment the following:
         database: "face-recognition-api"
 ```
 
-## Run Server Locally
-
-If you want nodemon support, run:
-
-```bash
-npm run start:dev
-```
-
-Otherwise, run:
-
-```bash
-npm start
-```
-
 ## Secret and Encryption Keys
 
 Generate secret and encryption keys to be stored in environment variables by uncommenting the following in server.js:
@@ -136,6 +122,20 @@ Replace `YOUR_JWT_SECRET_KEY` in the `.env` file with the value of `Base64 JWT S
 generateSecretEncryptionKeys();
 ```
 
+## Run Server Locally
+
+If you want nodemon support, run:
+
+```bash
+npm run start:dev
+```
+
+Otherwise, run:
+
+```bash
+npm start
+```
+
 ## Deployment
 
-Create a free account for [Render](https://render.com/docs). Replace `YOUR_FRONTEND_URL` in the `.env` file with the value of your frontend application URL. Deploy this application with the environment variables in the `.env` file.
+Create a free account for [Render](https://render.com/docs). Replace `http://localhost:5173` in the `.env` file with the value of your frontend application URL. Deploy this application with the environment variables in the `.env` file.
